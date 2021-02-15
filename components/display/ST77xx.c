@@ -241,7 +241,8 @@ static bool Init( struct GDS_Device* Device ) {
 	Device->WriteCommand( Device, 0x11 );
 		
 	// need BGR & Address Mode
-	Private->MADCtl = 1 << 3;
+	//Private->MADCtl = 1 << 3; #bgr
+	Private->MADCtl = 0x20|0x40; //rotate 90
 	Device->WriteCommand( Device, 0x36 );
 	WriteByte( Device, Private->MADCtl );		
 		

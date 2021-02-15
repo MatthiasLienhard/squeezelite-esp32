@@ -908,7 +908,7 @@ static void register_i2c_set_display(){
 	i2cdisp_args.back = 	arg_int0("b", "back", "<n>","Backlight GPIO (if applicable)");
 	i2cdisp_args.depth = 	arg_int0("p", "depth", "1|4", "Bit Depth (only for SSD1326 displays)");
 	i2cdisp_args.type = 	arg_str0("t", "type", "<I2C|SPI>", "Interface (default I2C)");
-	i2cdisp_args.rotate = 	arg_lit0("r", "rotate", "Rotate 180 degrees");
+	i2cdisp_args.rotate = 	arg_lit0("r", "rotate", "Rotate 90 degrees");
 	i2cdisp_args.clear = 	arg_lit0(NULL, "clear", "clear configuration and return");
 	i2cdisp_args.end = 		arg_end(8);
 	const esp_console_cmd_t i2c_set_display= {

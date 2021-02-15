@@ -230,7 +230,8 @@ int GDS_GrayMap( struct GDS_Device* Device, uint8_t Level) {
 void GDS_SetContrast( struct GDS_Device* Device, uint8_t Contrast ) { 
 	if (Device->SetContrast) Device->SetContrast( Device, Contrast ); 
 	else if (Device->Backlight.Pin >= 0) {
-		Device->Backlight.PWM = PWMConfig.Max * powf(Contrast / 255.0, 3);
+		//Device->Backlight.PWM = PWMConfig.Max * powf(Contrast / 255.0, 3);
+		Device->Backlight.PWM = PWMConfig.Max * (Contrast / 255.0);
 		ledc_set_duty( LEDC_HIGH_SPEED_MODE, Device->Backlight.Channel, Device->Backlight.PWM );
 		ledc_update_duty( LEDC_HIGH_SPEED_MODE, Device->Backlight.Channel );		
 	}
