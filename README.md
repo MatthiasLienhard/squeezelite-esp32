@@ -24,7 +24,7 @@ Other features include
  - Firmware over-the-air update 
 
 ## Supported Hardware
-Any esp32-based hardware with at least 4MB of flash and 4MB of PSRAM will be capable of running squeezelite-esp32 and there are various boards that include such chip. A few are mentionned below, but any should work.
+Any esp32-based hardware with at least 4MB of flash and 4MB of PSRAM will be capable of running squeezelite-esp32 and there are various boards that include such chip. A few are mentionned below, but any should work. You can find various help & instructions [here](https://forums.slimdevices.com/showthread.php?112697-ANNOUNCE-Squeezelite-ESP32-(dedicated-thread))
 ### Raw WROVER module
 Per above description, a [WROVER module](https://www.espressif.com/en/products/modules/esp32) is enough to run Squeezelite-esp32, but that requires a bit of tinkering to extend it to have analogue audio or hardware buttons (e.g.) 
 
@@ -45,13 +45,18 @@ NB: You can use the pre-build binaries SqueezeAMP4MBFlash which has all the hard
 ### ESP32-A1S
 Works with [ESP32-A1S](https://docs.ai-thinker.com/esp32-a1s) module that includes audio codec and headset output. You still need to use a demo board like [this](https://www.aliexpress.com/item/4000765857347.html?spm=2114.12010615.8148356.11.5d963cd0j669ns) or an external amplifier if you want direct speaker connection. 
 
-The board showed above has the following IO set
+The board shown above has the following IO set
 - amplifier: GPIO21
 - key2: GPIO13, key3: GPIO19, key4: GPIO23, key5: GPIO18, key6: GPIO5 (to be confirmed with dip switches)
-- key1: not sure, something with GPIO36
+- key1: not sure, using GPIO36 in a matrix
 - jack insertion: GPIO39 (inserted low)
-- LED: GPIO22 (active low)
-(note that GPIO need pullups)
+- D4 -> GPIO22 used for green LED (active low)
+- D5 -> GPIO19 (muxed with key3)
+- The IO connector also brings GPIO5, GPIO18, GPIO19, GPIO21, GPIO22 and GPIO23 (don't forget it's muxed with keys!)
+- The JTAG connector uses GPIO 12, 13, 14 and 15 (see dip switch) but these are also used for SD-card (and GPIO13 is key2 as well)
+- It's always possible to re-use GPIOO (download at boot) and GPIO1/GPIO3 which are RX/TX of UART0 but you'll lose trace
+
+(note that some GPIO need pullups)
 
 So a possible config would be
 - set_GPIO: 21=amp,22=green:0,39=jack:0
@@ -207,15 +212,17 @@ There is also the possibility to use 'knobonly' option (exclusive with 'volume' 
 - double press is 'Back' (Left in LMS's terminology). 
 - a quick left-right movement on the encoder is 'Pause' 
 
-The speed of double click (or left-right) can be set using the optional parameter of 'knobonly'. This is not a perfect solution, and other ideas are welcome. Be aware that the longer you set double click speed, the less responsive the interface will be. The reason is that I need to wait for that delay before deciding if it's a single or double click. It can also make menu navigation "hesitations" being easoly interpreted as 'Pause'
+The speed of double click (or left-right) can be set using the optional parameter of 'knobonly'. This is not a perfect solution, and other ideas are welcome. Be aware that the longer you set double click speed, the less responsive the interface will be. The reason is that I need to wait for that delay before deciding if it's a single or double click. It can also make menu navigation "hesitations" being easily interpreted as 'Pause'
 
 Use parameter rotary_config with the following syntax:
 
 ```
-A=<gpio>,B=<gpio>[,SW=gpio>[[,knobonly[=<ms>]|[,volume][,longpress]]
+A=<gpio>,B=<gpio>[,SW=gpio>[[,knobonly[=<ms>]]|[[,volume][,longpress]]]]
 ```
 
 HW note: all gpio used for rotary have internal pull-up so normally there is no need to provide Vcc to the encoder. Nevertheless if the encoder board you're using also has its own pull-up that are stronger than ESP32's ones (which is likely the case), then there will be crosstalk between gpio, so you must bring Vcc. Look at your board schematic and you'll understand that these board pull-up create a "winning" pull-down when any other pin is grounded. 
+
+The SW gpio is optional, you can re-affect it to a pure button if you prefer but the volume, longpress and knobonly options make little sense as the missing switch plays an important role in these modes. You could still have the "volume" mode, but you won't be able to use it for *anything* expect volume up and down. So be aware that the use of syntax [] is a bit misleading hereabove.
 
 See also the "IMPORTANT NOTE" on the "Buttons" section and remember that when 'lms_ctrls_raw' (see below) is activated, none of these knobonly,volume,longpress options apply, raw button codes (not actions) are simply sent to LMS
 

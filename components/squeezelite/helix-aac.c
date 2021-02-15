@@ -430,12 +430,11 @@ static decode_state helixaac_decode(void) {
 		}
 	}
 
-	// we always have at least WRAPBUF_LEN unless it's the end of a stream
-	if (bytes_wrap < WRAPBUF_LEN) {
+	// we always have at least WRAPBUF_LEN unless it's the end of a stream	
+	if (bytes_wrap < WRAPBUF_LEN && bytes_wrap != bytes_total) {		
 		// build a linear buffer if we are crossing the end of streambuf
 		memcpy(a->wrap_buf, streambuf->readp, bytes_wrap);
-		memcpy(a->wrap_buf + bytes_wrap, streambuf->buf, min(WRAPBUF_LEN, bytes_total) - bytes_wrap);
-		
+		memcpy(a->wrap_buf + bytes_wrap, streambuf->buf, min(WRAPBUF_LEN, bytes_total) - bytes_wrap);		
 		sptr = a->wrap_buf;
 		bytes = bytes_wrap = min(WRAPBUF_LEN, bytes_total);
 	} else {
